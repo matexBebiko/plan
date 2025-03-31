@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Dnia</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 600px;
+            width: 100%;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        h3 {
+            color: #555;
+            margin-bottom: 20px;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        li {
+            background: #ffffff;
+            margin: 8px 0;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid #ddd;
+            transition: background 0.3s;
+        }
+        li:hover {
+            background: #f9f9f9;
+        }
+        input[type="checkbox"] {
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+        .done {
+            text-decoration: line-through;
+            color: gray;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>Twój plan na dziś</h2>
+        <h3 id="dayOfWeek"></h3>
+        <ul id="planList"></ul>
+    </div>
+
+    <script>
+        const plan = {
+            "Poniedziałek": [
+                "06:15 - Pobudka, śniadanie",
+                "07:45 - Wyjazd do szkoły",
+                "08:15 - 15:35 - Szkoła",
+                "16:05 - Powrót do domu, odpoczynek, jedzenie",
+                "17:00 - Nauka matematyki (1h)",
+                "18:00 - Przekąska, przygotowanie na trening",
+                "19:00 - 20:30 - Kickboxing",
+                "21:00 - Powrót, kolacja",
+                "22:30 - Sen"
+            ],
+            "Wtorek": [
+                "07:15 - Pobudka, śniadanie",
+                "08:40 - Wyjazd do szkoły",
+                "09:10 - 16:30 - Szkoła",
+                "17:00 - Powrót do domu, obiad",
+                "17:30 - Nauka (45 min)",
+                "18:30 - 20:30 - Korepetycje",
+                "21:00 - Powrót, kolacja",
+                "22:30 - Sen"
+            ],
+            "Środa": [
+                "07:15 - Pobudka, śniadanie",
+                "08:40 - Wyjazd do szkoły",
+                "09:10 - 16:30 - Szkoła",
+                "17:00 - Powrót do domu, odpoczynek, jedzenie",
+                "17:30 - Nauka matematyki (45 min)",
+                "18:30 - 20:00 - Kickboxing",
+                "20:30 - Powrót, kolacja",
+                "22:30 - Sen"
+            ],
+            "Czwartek": [
+                "08:00 - Pobudka, śniadanie",
+                "09:30 - Wyjazd do szkoły",
+                "10:05 - 16:30 - Szkoła",
+                "17:00 - Powrót do domu, obiad",
+                "17:30 - Nauka (1h)",
+                "18:30 - Przygotowanie na trening",
+                "19:00 - 20:30 - Kickboxing",
+                "21:00 - Powrót, kolacja",
+                "22:30 - Sen"
+            ],
+            "Piątek": [
+                "07:15 - Pobudka, śniadanie",
+                "08:40 - Wyjazd do szkoły",
+                "09:10 - 12:50 - Szkoła",
+                "13:30 - 14:30 - Korepetycje",
+                "15:00 - Powrót, odpoczynek",
+                "16:00 - Siłownia",
+                "17:30 - Powrót, kolacja",
+                "18:00 - Nauka (1h)",
+                "19:30 - Relaks / social media",
+                "22:30 - Sen"
+            ]
+        };
+
+        function getDayOfWeek() {
+            const days = ["Niedziela", "Poniedziałek", "Wtorek", "Środa", "Czwartek", "Piątek", "Sobota"];
+            return days[new Date().getDay()];
+        }
+
+        function loadPlan() {
+            const today = getDayOfWeek();
+            document.getElementById("dayOfWeek").textContent = "Dziś jest: " + today;
+
+            if (!plan[today]) return;
+            const planList = document.getElementById("planList");
+            planList.innerHTML = "";
+
+            const savedStatus = JSON.parse(localStorage.getItem(today) || "{}");
+
+            plan[today].forEach((task, index) => {
+                const li = document.createElement("li");
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                checkbox.checked = savedStatus[index] || false;
+                checkbox.addEventListener("change", () => {
+                    savedStatus[index] = checkbox.checked;
+                    localStorage.setItem(today, JSON.stringify(savedStatus));
+                    li.classList.toggle("done", checkbox.checked);
+                });
+
+                const taskText = document.createElement("span");
+                taskText.textContent = task;
+                if (checkbox.checked) {
+                    taskText.classList.add("done");
+                }
+
+                li.appendChild(taskText);
+                li.appendChild(checkbox);
+                planList.appendChild(li);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", loadPlan);
+    </script>
+</body>
+</html>
